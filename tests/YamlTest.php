@@ -237,18 +237,18 @@ EOT;
     {
         $Yaml = <<< EOT
 block_1: |
-            this is a multiline block
-            of text
+  this is a multiline block
+  of text
 block_2: >
-            this also is a multiline block
-            of text
+  this also is a multiline block
+  of text
 EOT;
         $expected = [
             'block_1' => "this is a multiline block\nof text", // literal
             'block_2' => 'this also is a multiline block of text', // folded
         ];
         $result = Yaml::toArray($Yaml);
-         
+  
         $this->assertSame($expected, Yaml::toArray($Yaml));
     }
 
@@ -272,11 +272,13 @@ addresses:
     - street: 5 Some avenue
       city: Manchester
 description: |
-    Lorem ipsum dolor sit amet, 
-    ea eum nihil sapientem, timeam 
-    constituto id per. 
+  Lorem ipsum dolor sit amet, > 
+  ea eum nihil sapientem, timeam
+  constituto id per.
 EOT;
-        $expected = '{"name":"James Anderson","job":"PHP developer","active":true,"fruits":["Apple","Banana"],"phones":{"home":"0207 123 4567","mobile":"123 456 567"},"addresses":[{"street":"2 Some road","city":"London"},{"street":"5 Some avenue","city":"Manchester"}],"description":"Lorem ipsum dolor sit amet,\nea eum nihil sapientem, timeam\nconstituto id per."}';
+       
+        $expected = '{"name":"James Anderson","job":"PHP developer","active":true,"fruits":["Apple","Banana"],"phones":{"home":"0207 123 4567","mobile":"123 456 567"},"addresses":[{"street":"2 Some road","city":"London"},{"street":"5 Some avenue","city":"Manchester"}],"description":"Lorem ipsum dolor sit amet, > \nea eum nihil sapientem, timeam\nconstituto id per."}';
+    
         $this->assertEquals($expected, json_encode(Yaml::toArray($Yaml)));
     }
 
@@ -309,5 +311,15 @@ EOT;
         $this->expectException(YamlException::class);
         $Yaml = "...\nname: value...";
         Yaml::toArray($Yaml);
+    }
+
+    /**
+     * This test was created to test parsing yaml values within yaml and the last
+     * line which is an empty parent and was causing a permenet loop
+     */
+    public function testYamlWithinYaml()
+    {
+        $yaml = Yaml::toArray(file_get_contents(__DIR__ . '/Fixture/cloud-init.yml'));
+        $this->assertEquals('b85eab4501694a0ee97e39b92db27b9c', md5(json_encode($yaml)));
     }
 }
