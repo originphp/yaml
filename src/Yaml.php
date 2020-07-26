@@ -90,6 +90,7 @@ class Yaml
                 }
             } else {
                 $value = self::dumpValue($value);
+                
                 if (is_int($key)) {
                     $string = "- {$value}";
                 } else {
@@ -112,10 +113,13 @@ class Yaml
     protected static function dumpValue($value)
     {
         if (is_bool($value)) {
-            return $value?'true':'false';
+            return $value ? 'true' : 'false';
         }
         if (is_null($value)) {
             return null;
+        }
+        if ($value === '') {
+            return '""';
         }
         if (is_string($value) && strpos($value, "\n") !== false) {
             $value = "| {$value}";

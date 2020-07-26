@@ -16,6 +16,9 @@ namespace Origin\Yaml;
 
 use Origin\Yaml\Exception\YamlException;
 
+/**
+ * This has become quite big and is ready for a refactor.
+ */
 class YamlParser
 {
     /**
@@ -258,6 +261,17 @@ class YamlParser
                     $result[$key] = null;
                     break;
                 }
+
+                // Check if next line is part of same node (e.g. empty array)
+                $nextLine = $this->lines[$i+1];
+                if ($this->isScalar($nextLine) || $this->isParent($nextLine)) {
+                    $nextLineSpaces = strpos($nextLine, trim($nextLine));
+                    if ($nextLineSpaces <= $spaces) {
+                        $result[$key] = [];
+                        continue;
+                    }
+                }
+
                 $result[$key] = $this->parse($i + 1);
                 // Walk backward
                 if (isset($result[$key]['__plain_scalar__'])) {
@@ -305,13 +319,14 @@ class YamlParser
 
     /**
      * Checks if a line is scalar value
+     * @internal the space is important
      *
      * @param string $line
      * @return boolean
      */
     protected function isScalar(string $line) :bool
     {
-        return (strpos(trim($line), ': ') !== false);
+        return (strpos($line, ': ') !== false);
     }
 
     /**
@@ -353,11 +368,19 @@ class YamlParser
             case 'false':
                 return false;
             break;
+            case '':
+            // json is offical subset of YAML, so these values should work
             case 'null':
                 return null;
             break;
+            case '[]':
+                return [];
+            break;
+            case '""':
+                return '';
+            break;
         }
-       
+          
         return trim($value, '"\''); // remove quotes spaces etc
     }
 }

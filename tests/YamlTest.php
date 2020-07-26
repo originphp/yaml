@@ -210,6 +210,7 @@ employee:
 EOT;
    
         $expected = ['employee' => ['name' => 'James','position' => 'Senior Developer']];
+
         $this->assertEquals($expected, Yaml::toArray($Yaml));
     }
 
@@ -323,9 +324,27 @@ EOT;
         $this->assertEquals('b85eab4501694a0ee97e39b92db27b9c', md5(json_encode($yaml)));
     }
 
-    public function testErrorCausedBySpaceAfterParent()
+    public function testMixed()
     {
-        $yaml = Yaml::toArray(file_get_contents(__DIR__ . '/Fixture/test.yml'));
-        $this->assertEquals('49fda2c7a97290d6b224334c4d73cfb7', md5(json_encode($yaml)));
+        $data = [
+            'name' => 'foo',
+            'null' => null,
+            'empty' => '',
+            'emptyArray' => [],
+            'text' => 'bar'
+        ];
+        $yaml = Yaml::fromArray($data);
+        $expected = "name: foo\nnull: \nempty: \"\"\nemptyArray:\ntext: bar\n";
+        $this->assertSame($expected, $yaml);
+       
+        $array = Yaml::toArray($yaml);
+        $this->assertNull($array['null']);
+        $this->assertEquals('', $array['empty']);
+        $this->assertEquals([], $array['emptyArray']);
+
+        // test parsing of [] json subset
+        $yaml = "name: foo\nnull: \nempty: \"\"\nemptyArray: []\ntext: bar\n";
+        $array = Yaml::toArray($yaml);
+        $this->assertEquals([], $array['emptyArray']);
     }
 }
