@@ -248,7 +248,7 @@ class YamlParser
                 list($key, $value) = explode(': ', ltrim($line));
                 $result[rtrim($key)] = $this->readValue($value);
             } elseif ($this->isParent($line)) {
-                $line = ltrim($line);
+                $line = trim($line);
                 $key = substr($line, 0, -1);
             
                 $key = rtrim($key);   // remove ending spaces e.g. invoice   :
@@ -311,7 +311,7 @@ class YamlParser
      */
     protected function isScalar(string $line) :bool
     {
-        return (strpos($line, ': ') !== false);
+        return (strpos(trim($line), ': ') !== false);
     }
 
     /**

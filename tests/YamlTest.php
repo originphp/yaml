@@ -322,4 +322,10 @@ EOT;
         $yaml = Yaml::toArray(file_get_contents(__DIR__ . '/Fixture/cloud-init.yml'));
         $this->assertEquals('b85eab4501694a0ee97e39b92db27b9c', md5(json_encode($yaml)));
     }
+
+    public function testErrorCausedBySpaceAfterParent()
+    {
+        $yaml = Yaml::toArray(file_get_contents(__DIR__ . '/Fixture/test.yml'));
+        $this->assertEquals('49fda2c7a97290d6b224334c4d73cfb7', md5(json_encode($yaml)));
+    }
 }
