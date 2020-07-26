@@ -51,7 +51,7 @@ EOT;
        
         $expected = <<< EOT
 id: 1234
-address: 
+address:
   line: | 458 Some Road
                 Somewhere, Something
   city: london
@@ -78,10 +78,10 @@ EOT;
         $Yaml = Yaml::fromArray($students);
         $expected = <<< EOT
 - name: tony
-  phones: 
+  phones:
     - 1234-456
 - name: nick
-  phones: 
+  phones:
     - 1234-456
     - 456-4334
 EOT;
@@ -103,7 +103,7 @@ EOT;
         $expected = <<< EOT
 id: 1234
 name: tony
-addresess: 
+addresess:
   - street: 1234 some road
     city: london
   - street: 546 some avenue
@@ -145,14 +145,14 @@ EOF;
         ];
         $Yaml = Yaml::fromArray($data);
         $expected = <<< EOT
-services: 
-  app: 
+services:
+  app:
     build: .
-    depends_on: 
+    depends_on:
       - db
-  memcached: 
+  memcached:
     image: memcached
-volumes: 
+volumes:
   mysql: abc
 EOT;
         $this->assertStringContainsString($expected, $Yaml);

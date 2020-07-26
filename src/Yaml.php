@@ -85,7 +85,7 @@ class Yaml
                 if (is_int($key)) {
                     $output .= self::dump($value, $indent, true);
                 } else {
-                    $output .= str_repeat(' ', $indent)  . "{$key}: \n";
+                    $output .= str_repeat(' ', $indent)  . "{$key}:\n";
                     $output .= self::dump($value, $indent + self::$indent);
                 }
             } else {

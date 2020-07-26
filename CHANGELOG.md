@@ -10,7 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Fixed issue with parsing parent e.g. `data:` which had trailing spaces
+- Fixed issue with parsing parent e.g. `data:` which have trailing spaces
+
+### Changed
+
+- Changed dump to not include trailing space after parent
 
 ## [1.1.1] - 2020-05-26
 
