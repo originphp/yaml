@@ -44,8 +44,6 @@
 declare(strict_types = 1);
 namespace Origin\Yaml;
 
-use Origin\Yaml\Exception\YamlException;
-
 class Yaml
 {
     const EOF = "\r\n";
@@ -68,7 +66,7 @@ class Yaml
      * @param string $string
      * @return array
      */
-    public static function toArray(string $string) : array
+    public static function toArray(string $string): array
     {
         return (new YamlParser($string))->toArray();
     }
@@ -79,7 +77,7 @@ class Yaml
      * @param array $array
      * @return string
      */
-    public static function fromArray(array $array) : string
+    public static function fromArray(array $array): string
     {
         return self::dump($array);
     }

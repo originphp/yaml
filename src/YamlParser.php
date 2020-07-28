@@ -66,7 +66,7 @@ class YamlParser
      * @param array $lines
      * @return array
      */
-    public function lines(array $lines = null) : array
+    public function lines(array $lines = null): array
     {
         if ($lines) {
             $this->lines = $lines;
@@ -81,7 +81,7 @@ class YamlParser
      * @param int $from
      * @return array
      */
-    protected function findRecordSets(int $from) : array
+    protected function findRecordSets(int $from): array
     {
         $lines = count($this->lines);
         $results = [];
@@ -118,7 +118,7 @@ class YamlParser
      * @param integer $lineNo from
      * @return array
      */
-    protected function parse(int $lineNo = 0) : array
+    protected function parse(int $lineNo = 0): array
     {
         $result = [];
         $lines = count($this->lines);
@@ -194,7 +194,7 @@ class YamlParser
                 for ($w = $i + 1;$w < $lines;$w++) {
                     $nextLine = substr($this->lines[$w], $trimFrom); #
 
-                    $nextline  = rtrim($nextLine); // clean up end of lines
+                    $nextline = rtrim($nextLine); // clean up end of lines
 
                     // Handle multilines which are on the last lastline
                     if ($w === $lines - 1) {
@@ -263,7 +263,7 @@ class YamlParser
                 }
 
                 // Check if next line is part of same node (e.g. empty array)
-                $nextLine = $this->lines[$i+1];
+                $nextLine = $this->lines[$i + 1];
                 if ($this->isScalar($nextLine) || $this->isParent($nextLine)) {
                     $nextLineSpaces = strpos($nextLine, trim($nextLine));
                     if ($nextLineSpaces <= $spaces) {
@@ -292,7 +292,7 @@ class YamlParser
      * @param string $string
      * @return array
      */
-    protected function readLines(string $string) : array
+    protected function readLines(string $string): array
     {
         $lines = [];
         $lines[] = $line = strtok($string, static::EOF);
@@ -324,7 +324,7 @@ class YamlParser
      * @param string $line
      * @return boolean
      */
-    protected function isScalar(string $line) :bool
+    protected function isScalar(string $line): bool
     {
         return (strpos($line, ': ') !== false);
     }
@@ -335,7 +335,7 @@ class YamlParser
      * @param string $line
      * @return bool
      */
-    protected function isList(string $line) : bool
+    protected function isList(string $line): bool
     {
         $line = trim($line);
 
@@ -347,7 +347,7 @@ class YamlParser
      *
      * @return array
      */
-    public function toArray() : array
+    public function toArray(): array
     {
         return $this->parse();
     }
@@ -378,6 +378,7 @@ class YamlParser
             if (preg_match('/^[-+]?([0-9]+)$/', $value)) {
                 return (int) $value;
             }
+
             return (float) $value;
         }
        
@@ -389,7 +390,6 @@ class YamlParser
             return '';
         }
         
-          
         return trim($value, '"\''); // remove quotes spaces etc
     }
 }
