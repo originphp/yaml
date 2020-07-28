@@ -353,33 +353,42 @@ class YamlParser
     }
 
     /**
-     * Undocumented function
-     * Many types of bool
+     * Converts incoming values such as bools, nulls, empty arrays or ""
+     *
      * @see https://Yaml.org/type/bool.html
+     * @see https://yaml.org/spec/1.2/spec.html
+     *
      * @param mixed $value
      * @return mixed
      */
     protected function readValue($value)
     {
-        switch ($value) {
-            case 'true':
-                return true;
-            break;
-            case 'false':
-                return false;
-            break;
-            case '':
-            // json is offical subset of YAML, so these values should work
-            case 'null':
-                return null;
-            break;
-            case '[]':
-                return [];
-            break;
-            case '""':
-                return '';
-            break;
+        if (in_array($value, ['true','True','TRUE'])) {
+            return true;
         }
+        if (in_array($value, ['false','False','FALSE'])) {
+            return false;
+        }
+        // empty ie '' should map to null
+        if (in_array($value, ['null','Null','NULL','~',''])) {
+            return null;
+        }
+
+        if (is_numeric($value)) {
+            if (preg_match('/^[-+]?([0-9]+)$/', $value)) {
+                return (int) $value;
+            }
+            return (float) $value;
+        }
+       
+        // json is offical subset of YAML, so these values should work
+        if ($value === '[]') {
+            return [];
+        }
+        if ($value === '""') {
+            return '';
+        }
+        
           
         return trim($value, '"\''); // remove quotes spaces etc
     }

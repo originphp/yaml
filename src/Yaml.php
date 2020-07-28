@@ -50,7 +50,16 @@ class Yaml
 {
     const EOF = "\r\n";
 
+    /**
+     * @var integer
+     */
     protected static $indent = 2;
+
+    /**
+     * Undocumented variable
+     *
+     * @var array
+     */
     protected static $lines = [];
 
     /**
@@ -61,8 +70,7 @@ class Yaml
      */
     public static function toArray(string $string) : array
     {
-        $parser = new YamlParser($string);
-        return $parser->toArray();
+        return (new YamlParser($string))->toArray();
     }
   
     /**
@@ -76,7 +84,15 @@ class Yaml
         return self::dump($array);
     }
 
-    protected static function dump(array $array, int $indent = 0, $isList = false)
+    /**
+     * Internal work horse for dumping the array to YAML
+     *
+     * @param array $array
+     * @param integer $indent
+     * @param boolean $isList
+     * @return string
+     */
+    protected static function dump(array $array, int $indent = 0, bool $isList = false) : string
     {
         $output = '';
         $line = 0;
@@ -110,13 +126,19 @@ class Yaml
         return $output;
     }
     
+    /**
+     * Prepares a value for dumping
+     *
+     * @param mixed $value
+     * @return void
+     */
     protected static function dumpValue($value)
     {
         if (is_bool($value)) {
             return $value ? 'true' : 'false';
         }
         if (is_null($value)) {
-            return null;
+            return 'null';
         }
         if ($value === '') {
             return '""';

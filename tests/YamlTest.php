@@ -334,7 +334,7 @@ EOT;
             'text' => 'bar'
         ];
         $yaml = Yaml::fromArray($data);
-        $expected = "name: foo\nnull: \nempty: \"\"\nemptyArray:\ntext: bar\n";
+        $expected = "name: foo\nnull: null\nempty: \"\"\nemptyArray:\ntext: bar\n";
         $this->assertSame($expected, $yaml);
        
         $array = Yaml::toArray($yaml);
@@ -346,5 +346,30 @@ EOT;
         $yaml = "name: foo\nnull: \nempty: \"\"\nemptyArray: []\ntext: bar\n";
         $array = Yaml::toArray($yaml);
         $this->assertEquals([], $array['emptyArray']);
+    }
+
+    public function testParseNulls()
+    {
+        $yaml = "name: foo\nnull: null\nempty: \nemptyArray:\ntext: bar\n";
+        $array = Yaml::toArray($yaml);
+        $this->assertNull($array['null']);
+        $this->assertNull($array['empty']);
+    }
+
+    public function testParseIntegers()
+    {
+        $yaml = "a: 1\nb: -1\nc: +1";
+        $array = Yaml::toArray($yaml);
+        $this->assertIsInt($array['a']);
+        $this->assertIsInt($array['b']);
+        $this->assertIsInt($array['c']);
+    }
+    public function testParseFloats()
+    {
+        $yaml = "a: 1.5\nb: -1.5\nc: +1.5";
+        $array = Yaml::toArray($yaml);
+        $this->assertIsFloat($array['a']);
+        $this->assertIsFloat($array['b']);
+        $this->assertIsFloat($array['c']);
     }
 }
