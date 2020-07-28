@@ -41,19 +41,19 @@ EOT;
         $student = [
             'id' => 1234,
             'address' => [
-                'line' => '458 Some Road
-                Somewhere, Something', // multi line
+                'line' => "458 Some Road\nSomewhere, Something", // multi line
                 'city' => 'london',
             ],
             
         ];
         $Yaml = Yaml::fromArray($student);
-       
+ 
         $expected = <<< EOT
 id: 1234
 address:
-  line: | 458 Some Road
-                Somewhere, Something
+  line: |
+    458 Some Road
+    Somewhere, Something
   city: london
 EOT;
         $this->assertStringContainsString($expected, $Yaml);
@@ -278,8 +278,7 @@ description: |
   constituto id per.
 EOT;
        
-        $expected = '{"name":"James Anderson","job":"PHP developer","active":true,"fruits":["Apple","Banana"],"phones":{"home":"0207 123 4567","mobile":"123 456 567"},"addresses":[{"street":"2 Some road","city":"London"},{"street":"5 Some avenue","city":"Manchester"}],"description":"Lorem ipsum dolor sit amet, > \nea eum nihil sapientem, timeam\nconstituto id per."}';
-    
+        $expected = '{"name":"James Anderson","job":"PHP developer","active":true,"fruits":["Apple","Banana"],"phones":{"home":"0207 123 4567","mobile":"123 456 567"},"addresses":[{"street":"2 Some road","city":"London"},{"street":"5 Some avenue","city":"Manchester"}],"description":"Lorem ipsum dolor sit amet, >\nea eum nihil sapientem, timeam\nconstituto id per."}';
         $this->assertEquals($expected, json_encode(Yaml::toArray($Yaml)));
     }
 
@@ -321,6 +320,7 @@ EOT;
     public function testYamlWithinYaml()
     {
         $yaml = Yaml::toArray(file_get_contents(__DIR__ . '/Fixture/cloud-init.yml'));
+    
         $this->assertEquals('b85eab4501694a0ee97e39b92db27b9c', md5(json_encode($yaml)));
     }
 
@@ -379,5 +379,50 @@ EOT;
             'key' => [],
         ];
         $this->assertEquals("key: []\n", Yaml::fromArray($data));
+    }
+
+    public function testDumpMultiLine()
+    {
+        $data = [
+            'description' => "Line #1\nLine #2\nLine #3"
+        ];
+        $yaml = Yaml::fromArray($data);
+
+        $expected = <<< EOT
+description: |
+  Line #1
+  Line #2
+  Line #3
+EOT;
+
+        $this->assertStringContainsString($expected, $yaml);
+        $this->assertEquals($data, Yaml::toArray($yaml));
+    }
+
+    public function testToYamlAndBack()
+    {
+        $data = [
+            'name' => 'foo',
+            'description' => '',
+            'addresses' => [
+                [
+                    'street' => '100 Wall St',
+                    'city' => 'New York',
+                    'zip' => null
+                ]
+            ],
+            'settings' => [
+                'bool' => true,
+                'integer' => 123,
+                'float' => 1.23,
+                'array' => [],
+                'null' => null,
+                'string' => '',
+                'multiline' => "Lorem ipsum dolor sit amet, consectetur adipiscing elit.\n Nam id aliquam nibh, varius laoreet magna. Integer nec tristique ante.\n Nulla ac tortor vitae nulla ullamcorper bibendum. Vivamus nec nunc eget risus fringilla lacinia.\n Morbi porttitor nulla et luctus tincidunt. Sed lacus justo, blandit eu dignissim non, tincidunt nec dolor. Aliquam erat volutpat.\n Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae;"
+            ]
+        ];
+
+        $yaml = Yaml::fromArray($data);
+        $this->assertSame($data, Yaml::toArray($yaml));
     }
 }

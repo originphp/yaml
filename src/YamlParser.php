@@ -125,6 +125,7 @@ class YamlParser
      
         $spaces = $lastSpaces = 0;
    
+   
         for ($i = $lineNo;$i < $lines;$i++) {
             $line = $this->lines[$i];
             $marker = trim($line);
@@ -150,6 +151,44 @@ class YamlParser
                 break;
             }
 
+             
+            // Walk Forward to handle multiline data folded and literal
+            if ($this->isScalar($line) && (substr($line, -3) === ': |' || substr($line, -3) === ': >')) {
+                list($key, $value) = explode(': ', ltrim($line));
+                
+                $indent = strlen($line) - strlen(ltrim($line));
+               
+                $trimFrom = $indent + 2;
+
+                $value = '';
+                /**
+                 * > Folded style: line breaks replaced with space
+                 * | literal style: line breaks count
+                 * @see https://Yaml.org/spec/current.html#id2539942
+                 */
+                $break = substr($line, -1) === '>' ? ' ' : "\n";
+             
+                for ($w = $i + 1;$w < $lines;$w++) {
+                    $nextLine = substr($this->lines[$w], $trimFrom); #
+                    $nextLine = rtrim($nextLine); // clean up end of lines
+                      
+                    // Handle multilines which are on the last lastline
+                    if ($w === $lines - 1) {
+                        $value .= $nextLine . $break;
+                    }
+
+                    if (substr($this->lines[$w], 0, $indent +2) !== str_repeat(' ', $indent+2) || $w === $lines - 1) {
+                        $result[$key] = rtrim($value);
+                        break;
+                    }
+
+                    $value .= $nextLine . $break;
+                }
+
+                $this->i = $i = $w - 1;
+                continue;
+            }
+
             // Walk forward for multi line data
             if (! $this->isList($line) && ! $this->isScalar($line) && ! $this->isParent($line)) {
                 $parentLine = $this->lines[$i - 1];
@@ -171,45 +210,7 @@ class YamlParser
                 continue;
             }
           
-            // Walk Forward to handle multiline data folded and literal
-            if (substr($line, -1) === '|' || substr($line, -1) === '>') {
-                list($key, $value) = explode(': ', ltrim($line));
-                
-                $indent = strlen($line) - strlen(ltrim($line));
-                $trimFrom = $indent + 2;
 
-                // must be at least 1 indentation
-                if ($indent === 0) {
-                    $indent = 1;
-                }
-
-                $value = '';
-                /**
-                 * > Folded style: line breaks replaced with space
-                 * | literal style: line breaks count
-                 * @see https://Yaml.org/spec/current.html#id2539942
-                 */
-                $break = substr($line, -1) === '>' ? ' ' : "\n";
-             
-                for ($w = $i + 1;$w < $lines;$w++) {
-                    $nextLine = substr($this->lines[$w], $trimFrom); #
-
-                    $nextline = rtrim($nextLine); // clean up end of lines
-
-                    // Handle multilines which are on the last lastline
-                    if ($w === $lines - 1) {
-                        $value .= $nextLine . $break;
-                    }
-
-                    if (substr($this->lines[$w], 0, $indent) !== str_repeat(' ', $indent) || $w === $lines - 1) {
-                        $result[$key] = rtrim($value);
-                        break;
-                    }
-                    $value .= $nextLine . $break;
-                }
-                $this->i = $i = $w - 1;
-                continue;
-            }
             // Handle Lists
             if ($this->isList($line)) {
                 $trimmedLine = ltrim(' '. substr(ltrim($line), 2)); // work with any number of spaces;

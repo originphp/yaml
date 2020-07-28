@@ -104,8 +104,15 @@ class Yaml
                     $output .= self::dump($value, $indent + self::$indent);
                 }
             } else {
+
+                # indent multiline data
+                if (is_string($value) && strpos($value, "\n") !== false) {
+                    $spaces = str_repeat(' ', $indent + static::$indent); // '__'
+                    $value = "|\n" . str_replace("\n", "\n" . $spaces, $spaces . $value);
+                }
+
                 $value = self::dumpValue($value);
-                
+    
                 if (is_int($key)) {
                     $string = "- {$value}";
                 } else {
@@ -144,9 +151,6 @@ class Yaml
         }
         if ($value === '') {
             return '""';
-        }
-        if (is_string($value) && strpos($value, "\n") !== false) {
-            $value = "| {$value}";
         }
 
         return $value;
