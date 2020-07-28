@@ -334,7 +334,7 @@ EOT;
             'text' => 'bar'
         ];
         $yaml = Yaml::fromArray($data);
-        $expected = "name: foo\nnull: null\nempty: \"\"\nemptyArray:\ntext: bar\n";
+        $expected = "name: foo\nnull: null\nempty: \"\"\nemptyArray: []\ntext: bar\n";
         $this->assertSame($expected, $yaml);
        
         $array = Yaml::toArray($yaml);
@@ -371,5 +371,13 @@ EOT;
         $this->assertIsFloat($array['a']);
         $this->assertIsFloat($array['b']);
         $this->assertIsFloat($array['c']);
+    }
+
+    public function testDumpEmptyArray()
+    {
+        $data = [
+            'key' => [],
+        ];
+        $this->assertEquals("key: []\n", Yaml::fromArray($data));
     }
 }

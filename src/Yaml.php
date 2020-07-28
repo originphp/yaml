@@ -92,12 +92,13 @@ class Yaml
      * @param boolean $isList
      * @return string
      */
-    protected static function dump(array $array, int $indent = 0, bool $isList = false) : string
+    protected static function dump(array $array, int $indent = 0, bool $isList = false): string
     {
         $output = '';
         $line = 0;
+
         foreach ($array as $key => $value) {
-            if (is_array($value)) {
+            if (is_array($value) && ! empty($value)) {
                 if (is_int($key)) {
                     $output .= self::dump($value, $indent, true);
                 } else {
@@ -139,6 +140,9 @@ class Yaml
         }
         if (is_null($value)) {
             return 'null';
+        }
+        if ($value === []) {
+            return '[]';
         }
         if ($value === '') {
             return '""';

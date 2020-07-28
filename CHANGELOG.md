@@ -15,8 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Parses integers returns value as int type
-- Parses floats returns value as float type
+- Changed empty arrays are now dumped as []
+- Changed Parses integers returns value as int type
+- Changed Parses floats returns value as float type
 
 ## [1.1.3] - 2020-07-26
 
