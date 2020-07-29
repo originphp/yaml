@@ -216,7 +216,7 @@ class YamlParser
                 $trimmedLine = ltrim(' '. substr(ltrim($line), 2)); // work with any number of spaces;
                
                 if (trim($line) !== '-' && ! $this->isParent($trimmedLine) && ! $this->isScalar($trimmedLine)) {
-                    $result[] = $trimmedLine;
+                    $result[] = $this->readValue($trimmedLine);
                 } elseif ($this->isParent($trimmedLine)) {
                     $key = substr(ltrim($trimmedLine), 0, -1);
                     $result[$key] = $this->parse($i + 1);
@@ -227,6 +227,7 @@ class YamlParser
                      * the - from the start each set and pass through the parser (is this a hack?)
                      */
                     $sets = $this->findRecordSets($i);
+
                     foreach ($sets as $start => $finish) {
                         $setLines = [];
                         for ($ii = $start;$ii < $finish + 1;$ii++) {

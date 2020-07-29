@@ -411,6 +411,10 @@ EOT;
                     'zip' => null
                 ]
             ],
+            'keys' => [
+                1234,
+                'abc'
+            ],
             'settings' => [
                 'bool' => true,
                 'integer' => 123,
