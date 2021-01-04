@@ -136,7 +136,7 @@ class Yaml
      * Prepares a value for dumping
      *
      * @param mixed $value
-     * @return void
+     * @return mixed
      */
     protected static function dumpValue($value)
     {
