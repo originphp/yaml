@@ -1,7 +1,7 @@
 # Yaml
 
 ![license](https://img.shields.io/badge/license-MIT-brightGreen.svg)
-[![build](https://travis-ci.org/originphp/yaml.svg?branch=master)](https://travis-ci.org/originphp/yaml)
+[![build](https://github.com/originphp/yaml/workflows/CI/badge.svg)](https://github.com/originphp/yaml/actions)
 [![coverage](https://coveralls.io/repos/github/originphp/yaml/badge.svg?branch=master)](https://coveralls.io/github/originphp/yaml?branch=master)
 
 
