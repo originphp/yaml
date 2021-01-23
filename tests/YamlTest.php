@@ -112,8 +112,12 @@ EOT;
         $this->assertStringContainsString($expected, $Yaml);
     }
 
+    /**
+     * Support for this has been dropped for now
+     */
     public function testPlainScalarMultiline()
     {
+        $this->markTestIncomplete();
         $Yaml = <<< EOF
 multi:
   a
@@ -231,6 +235,7 @@ EOT;
             '100' => ['name' => 'James','position' => 'Senior Developer'],
             '200' => ['name' => 'Tony','position' => 'Manager'],
         ];
+
         $this->assertEquals($expected, Yaml::toArray($Yaml));
     }
 
@@ -249,7 +254,7 @@ EOT;
             'block_2' => 'this also is a multiline block of text', // folded
         ];
         $result = Yaml::toArray($Yaml);
-  
+
         $this->assertSame($expected, Yaml::toArray($Yaml));
     }
 
@@ -278,7 +283,8 @@ description: |
   constituto id per.
 EOT;
        
-        $expected = '{"name":"James Anderson","job":"PHP developer","active":true,"fruits":["Apple","Banana"],"phones":{"home":"0207 123 4567","mobile":"123 456 567"},"addresses":[{"street":"2 Some road","city":"London"},{"street":"5 Some avenue","city":"Manchester"}],"description":"Lorem ipsum dolor sit amet, >\nea eum nihil sapientem, timeam\nconstituto id per."}';
+        $expected = '{"name":"James Anderson","job":"PHP developer","active":true,"fruits":["Apple","Banana"],"phones":{"home":"0207 123 4567","mobile":"123 456 567"},"addresses":[{"street":"2 Some road","city":"London"},{"street":"5 Some avenue","city":"Manchester"}],"description":"Lorem ipsum dolor sit amet, > \nea eum nihil sapientem, timeam\nconstituto id per."}';
+      
         $this->assertEquals($expected, json_encode(Yaml::toArray($Yaml)));
     }
 
@@ -315,13 +321,13 @@ EOT;
 
     /**
      * This test was created to test parsing yaml values within yaml and the last
-     * line which is an empty parent and was causing a permenet loop
+     * line which is an empty parent and was causing a permenet loop.
+     * Changed hash since empty line is not used any more.
      */
     public function testYamlWithinYaml()
     {
         $yaml = Yaml::toArray(file_get_contents(__DIR__ . '/Fixture/cloud-init.yml'));
-    
-        $this->assertEquals('b85eab4501694a0ee97e39b92db27b9c', md5(json_encode($yaml)));
+        $this->assertEquals('38124ebfdef621eee822be1b74c913fe', md5(json_encode($yaml)));
     }
 
     public function testMixed()
@@ -368,6 +374,7 @@ EOT;
     {
         $yaml = "a: 1.5\nb: -1.5\nc: +1.5";
         $array = Yaml::toArray($yaml);
+   
         $this->assertIsFloat($array['a']);
         $this->assertIsFloat($array['b']);
         $this->assertIsFloat($array['c']);
@@ -412,8 +419,9 @@ EOT;
                 ]
             ],
             'keys' => [
-                1234,
-                'abc'
+                'no-key',
+                'name' => 'foo',
+                'integer' => 1234
             ],
             'settings' => [
                 'bool' => true,
