@@ -302,6 +302,7 @@ class YamlParser
             return '';
         }
         
-        return trim($value, '"\''); // remove quotes spaces etc
+        // Remove quotes if they have start and finish
+        return preg_replace('/^(\'(.*)\'|"(.*)")$/', '$2$3', trim($value));
     }
 }
