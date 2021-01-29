@@ -327,7 +327,7 @@ EOT;
     public function testYamlWithinYaml()
     {
         $yaml = Yaml::toArray(file_get_contents(__DIR__ . '/Fixture/cloud-init.yml'));
-        $this->assertEquals('38124ebfdef621eee822be1b74c913fe', md5(json_encode($yaml)));
+        $this->assertEquals('8ee7f939d1eea011f81b155f920a8485', md5(json_encode($yaml)));
     }
 
     public function testMixed()
