@@ -60,7 +60,7 @@ class YamlParser
            
             // @example name: value
             if ($syntax->isDictionary($line) && ! $syntax->isList($line) && ! $syntax->isArray($line) && ! $spansMultipleLines) {
-                list($key, $value) = explode(':', ltrim($line));
+                list($key, $value) = explode(':', ltrim($line), 2);
                 $out[trim($key)] = $this->castValue(trim($value));
                 continue;
             }
@@ -105,7 +105,7 @@ class YamlParser
                 $i = $this->walkFoward($i, $max, $buffer, $nextLevel);
 
                 list($key, ) = explode(':', ltrim($line));
-                $out[$key] = $this->flatten($buffer, $nextLevel, $fold ? ' ' : PHP_EOL);
+                $out[trim($key)] = $this->flatten($buffer, $nextLevel, $fold ? ' ' : PHP_EOL);
                 continue;
             }
             
@@ -122,7 +122,7 @@ class YamlParser
                 $firstLine = array_shift($buffer);
                 list($key, ) = explode(':', ltrim($firstLine));
              
-                $out[rtrim($key)] = $this->parseArray($buffer, $nextLevel);
+                $out[trim($key)] = $this->parseArray($buffer, $nextLevel);
                
                 continue;
             }
@@ -140,7 +140,7 @@ class YamlParser
                 $firstLine = array_shift($buffer);
                 list($key, ) = explode(':', ltrim($firstLine));
              
-                $out[rtrim($key)] = $this->parseArray($buffer, $nextLevel);
+                $out[trim($key)] = $this->parseArray($buffer, $nextLevel);
         
                 continue;
             }
