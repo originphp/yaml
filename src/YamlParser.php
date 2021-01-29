@@ -19,13 +19,31 @@ use Origin\Yaml\Exception\YamlException;
 
 class YamlParser
 {
-    private $yaml = null;
     private $lines = [];
 
     public function __construct(string $yaml)
     {
-        $this->yaml = $yaml;
-        $this->lines = preg_split("/\r\n|\n|\r/", $yaml);
+        $this->lines = $this->removeEmptyLines(preg_split("/\r\n|\n|\r/", $yaml));
+    }
+
+    /**
+     * Remove empty lines to prevent issues with walk forward
+     *
+     * @param array $lines
+     * @return array
+     */
+    private function removeEmptyLines(array $lines): array
+    {
+        $out = [];
+        foreach ($lines as  $line) {
+            $marker = trim($line);
+            if ($marker === '' || substr($marker, 0, 2) === '# ' || substr($line, 0, 3) === '---' || substr($line, 0, 5) === '%YAML') {
+                continue;
+            }
+            $out[] = $line;
+        }
+       
+        return $out;
     }
 
     /**
@@ -42,11 +60,6 @@ class YamlParser
             $line = $this->lines[$i];
             $marker = trim($line);
 
-            // Skip comments, empty lines and directive
-            if ($marker === '' || $marker[0] === '#' || substr($line, 0, 3) === '---' || substr($line, 0, 5) === '%YAML') {
-                continue;
-            }
-         
             if ($line[0] === "\t") {
                 throw new YamlException('YAML documents should not use tabs for indentation');
             }
@@ -67,24 +80,20 @@ class YamlParser
            
             // @example - foo
             if ($syntax->isList($line) && ! $syntax->isDictionary($line) && ! $syntax->isArray($line)) {
-                $out[] = substr(ltrim($line), 2);
+                $out[] = $this->castValue(substr(ltrim($line), 2));
                 continue;
             }
             
-            // work with empty lines
-            if (array_key_exists($i + 1, $this->lines) && empty($this->lines[$i + 1])) {
-
-                // an empty array with no look foward is trouble
+           
+            // Work with left over lines that don't get caught e.g. empty array
+            if (! isset($this->lines[$i + 1])) {
                 if ($syntax->isArray($line)) {
                     list($key) = explode(':', ltrim($line));
                     $out[trim($key)] = null;
+                } else {
+                    $out[] = $this->unlevel($line, $level); // comment line maybe?
                 }
-                continue;
-            }
-
-            // Lookforward functions beyond here
-            if (! isset($this->lines[$i + 1])) {
-                $out[] = $this->unlevel($line, $level); // comment line maybe?
+              
                 continue;
             }
 
@@ -117,6 +126,7 @@ class YamlParser
             if ($syntax->isArray($line) && ! $syntax->isList($line)) {
                 $buffer[] = $line;
               
+
                 $i = $this->walkFoward($i, $max, $buffer, $nextLevel);
 
                 $firstLine = array_shift($buffer);
